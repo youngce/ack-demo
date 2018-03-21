@@ -1,0 +1,42 @@
+version: '2.2'
+
+services:
+  cassandra:
+    image: cassandra:3.11.2
+#    env_file:
+#      - cassandra/cassandra.env
+    ports:
+#      - "7199:7199" # JMX
+#      - "7000:7000" # cluster communication
+#      - "7001:7001" # cluster communication (SSL)
+      - "9042:9042" # native protocol clients
+#      - "9160:9160" # thrift clients
+#    volumes:
+#      # - ./cassandra/config/collectd.cassandra.conf:/etc/collectd/collectd.conf
+##      - ./cassandra/config/graphite.cassandra.yaml:/etc/cassandra/graphite.yaml
+##      - ./cassandra/config/filebeat.yml:/etc/filebeat/filebeat.yml
+#      - ./cassandra/config/prometheus.yml:/prometheus/prometheus.yml
+#      # - ./data/cassandra:/var/lib/cassandra
+#
+#
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+    mem_limit: 4g
+    cpu_count: 2
+  kafka:
+    image: wurstmeister/kafka:1.0.0
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: 192.168.1.6  #your ip
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_PORT: "9092"
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
+    mem_limit: 4g
+    cpu_count: 2
